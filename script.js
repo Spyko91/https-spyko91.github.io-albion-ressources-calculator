@@ -59,6 +59,7 @@ function loadResource(resourceKey) {
 // ============================================
 function renderResourceTable() {
     const container = document.getElementById('table-container');
+    if (!container) return;
     
     let html = `
         <table>
@@ -368,8 +369,7 @@ async function fetchAllPrices() {
                         'Origin': window.location.origin
                     },
                     mode: 'cors',
-                    cache: 'no-cache',
-                    timeout: 10000
+                    cache: 'no-cache'
                 });
                 
                 if (response.ok) {
