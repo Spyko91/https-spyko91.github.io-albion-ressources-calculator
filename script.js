@@ -118,37 +118,77 @@ function loadFallbackPrices() {
 }
 
 // ============================================
-// TEST API EUROPE (NOUVEAU)
+// TEST API EUROPE AMÉLIORÉ
 // ============================================
 async function testEuropeAPI() {
     try {
         showStatus('🧪 Test API Europe...', 'info');
         
         const url = 'https://europe.albion-online-data.com/api/v2/stats/prices/T4_WOOD.json?locations=Thetford&qualities=1';
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
         
-        console.log('Test API:', proxyUrl);
+        // Liste de proxies à tester (on essaye chaque proxy jusqu'à ce qu'un fonctionne)
+        const proxies = [
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://proxy.cors.sh/',
+            ''  // Sans proxy (au cas où)
+        ];
         
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
+        let lastError = null;
         
-        console.log('✅ Réponse API Europe:', data);
-        
-        if (data && data.length > 0) {
-            const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
-            const prixVente = Math.max(...data[0].sell_price_max.map(p => p.Price));
-            
-            alert(`✅ API Europe OK !\n\nT4 Bois à Thetford:\n💰 Prix achat: ${prixAchat} silver\n💰 Prix vente: ${prixVente} silver`);
-            showStatus('✓ Test API réussi', 'success');
-        } else {
-            alert('❌ Pas de données reçues');
-            showStatus('❌ Test échoué', 'error');
+        for (const proxy of proxies) {
+            try {
+                const proxyUrl = proxy ? `${proxy}${encodeURIComponent(url)}` : url;
+                console.log('Tentative avec proxy:', proxy || 'direct');
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Succès avec proxy:', proxy || 'direct', data);
+                    
+                    if (data && data.length > 0) {
+                        const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
+                        const prixVente = Math.max(...data[0].sell_price_max.map(p => p.Price));
+                        
+                        alert(`✅ API Europe OK (via ${proxy || 'direct'}) !\n\nT4 Bois à Thetford:\n💰 Prix achat: ${prixAchat} silver\n💰 Prix vente: ${prixVente} silver`);
+                        showStatus('✓ Test API réussi', 'success');
+                        clearStatusAfterDelay();
+                        return;
+                    }
+                }
+            } catch (e) {
+                lastError = e;
+                console.log('❌ Échec avec proxy:', proxy, e.message);
+            }
         }
+        
+        // Si on arrive ici, tous les proxies ont échoué
+        throw lastError || new Error('Tous les proxies ont échoué');
+        
     } catch (error) {
-        console.error('❌ Erreur:', error);
-        alert('❌ Échec de la connexion à l\'API Europe');
-        showStatus('❌ Erreur de connexion', 'error');
-    } finally {
+        console.error('❌ Erreur finale:', error);
+        
+        // Message d'erreur plus utile
+        alert(`❌ Échec de la connexion à l'API Europe
+
+Causes possibles:
+1. Corsproxy.io est temporairement indisponible
+2. Votre navigateur bloque les requêtes CORS
+3. L'API Albion est momentanément hors ligne
+
+Suggestions:
+• Attendez quelques minutes et réessayez
+• Essayez avec un autre navigateur (Chrome, Firefox)
+• Désactivez vos extensions (AdBlock, etc.)`);
+
+        showStatus('❌ Test API échoué', 'error');
         clearStatusAfterDelay();
     }
 }
