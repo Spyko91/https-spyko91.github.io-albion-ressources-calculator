@@ -72,7 +72,6 @@ function renderResourceTable() {
                 <tr>
                     <th>Tier</th>
                     <th>Enchant</th>
-                    <th>Ressource</th>
                     <th>Qté<br>nécessaire</th>
                     <th>Prix achat<br>(${currentResourceData.rawName})</th>
                     <th>Prix total<br>brut</th>
