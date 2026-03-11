@@ -226,29 +226,38 @@ table {
     background: #0f141a;
 }
 
-/* Styles par TIER */
-.tier-T2 { background: linear-gradient(145deg, #1e252e, #181e26); border-left: 5px solid #6c7a8f; }
-.tier-T3 { background: linear-gradient(145deg, #1c2a21, #162219); border-left: 5px solid #4caf7a; }
-.tier-T4 { background: linear-gradient(145deg, #1a2533, #151e2a); border-left: 5px solid #3b9eff; }
-.tier-T5 { background: linear-gradient(145deg, #2a241a, #221d15); border-left: 5px solid #ffc107; }
-.tier-T6 { background: linear-gradient(145deg, #2a1f17, #221912); border-left: 5px solid #ff8c42; }
-.tier-T7 { background: linear-gradient(145deg, #2a1818, #221313); border-left: 5px solid #e15554; }
-.tier-T8 { background: linear-gradient(145deg, #1f1530, #191125); border-left: 5px solid #b380ff; }
+/* ============================================
+   COULEURS DES TIERS (corrigées)
+   ============================================ */
+.tier-T2 { background: linear-gradient(145deg, #3a2e1e, #2a2216); border-left: 5px solid #8b5a2b; }
+.tier-T2 td:first-child { color: #b87c3a; font-weight: bold; text-shadow: 0 0 8px rgba(139, 90, 43, 0.5); }
 
-.tier-T2 td:first-child { color: #b0c0d0; text-shadow: 0 0 8px rgba(108, 122, 143, 0.5); }
-.tier-T3 td:first-child { color: #7bdfa7; text-shadow: 0 0 8px rgba(76, 175, 122, 0.5); }
-.tier-T4 td:first-child { color: #89beff; text-shadow: 0 0 8px rgba(59, 158, 255, 0.5); }
-.tier-T5 td:first-child { color: #ffdb7a; text-shadow: 0 0 8px rgba(255, 193, 7, 0.5); }
-.tier-T6 td:first-child { color: #ffae73; text-shadow: 0 0 8px rgba(255, 140, 66, 0.5); }
-.tier-T7 td:first-child { color: #ff9494; text-shadow: 0 0 8px rgba(225, 85, 84, 0.5); }
-.tier-T8 td:first-child { color: #d0b5ff; text-shadow: 0 0 8px rgba(179, 128, 255, 0.5); }
+.tier-T3 { background: linear-gradient(145deg, #1c3a1c, #142914); border-left: 5px solid #2e8b57; }
+.tier-T3 td:first-child { color: #3cb371; font-weight: bold; text-shadow: 0 0 8px rgba(46, 139, 87, 0.5); }
 
-/* Styles pour les enchantements */
-.enchant-0 { color: #9aa9b9; }
-.enchant-1 { color: #7bdfa7; font-weight: 600; text-shadow: 0 0 10px rgba(123, 223, 167, 0.5); }
-.enchant-2 { color: #89beff; font-weight: 600; text-shadow: 0 0 10px rgba(137, 190, 255, 0.5); }
-.enchant-3 { color: #d0b5ff; font-weight: 700; text-shadow: 0 0 15px rgba(208, 181, 255, 0.7); }
-.enchant-4 { color: #ffb5b5; font-weight: 700; text-shadow: 0 0 15px rgba(255, 181, 181, 0.7); }
+.tier-T4 { background: linear-gradient(145deg, #1a3a4a, #122a35); border-left: 5px solid #1e6f9f; }
+.tier-T4 td:first-child { color: #3498db; font-weight: bold; text-shadow: 0 0 8px rgba(30, 111, 159, 0.5); }
+
+.tier-T5 { background: linear-gradient(145deg, #4a1e1e, #351515); border-left: 5px solid #b22222; }
+.tier-T5 td:first-child { color: #cd5c5c; font-weight: bold; text-shadow: 0 0 8px rgba(178, 34, 34, 0.5); }
+
+.tier-T6 { background: linear-gradient(145deg, #4a2e1a, #352213); border-left: 5px solid #d2691e; }
+.tier-T6 td:first-child { color: #e67e22; font-weight: bold; text-shadow: 0 0 8px rgba(210, 105, 30, 0.5); }
+
+.tier-T7 { background: linear-gradient(145deg, #4a4a1a, #353513); border-left: 5px solid #b8860b; }
+.tier-T7 td:first-child { color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(184, 134, 11, 0.5); }
+
+.tier-T8 { background: linear-gradient(145deg, #3a3a4a, #2a2a35); border-left: 5px solid #b0c4de; }
+.tier-T8 td:first-child { color: #e0e0e0; font-weight: bold; text-shadow: 0 0 8px rgba(176, 196, 222, 0.7); }
+
+/* ============================================
+   COULEURS DES ENCHANTEMENTS (corrigées)
+   ============================================ */
+.enchant-0 { color: #9aa9b9; } /* Gris pour .0 */
+.enchant-1 { color: #3cb371; font-weight: 600; text-shadow: 0 0 10px rgba(60, 179, 113, 0.5); } /* Vert */
+.enchant-2 { color: #3498db; font-weight: 600; text-shadow: 0 0 10px rgba(52, 152, 219, 0.5); } /* Bleu */
+.enchant-3 { color: #9b59b6; font-weight: 700; text-shadow: 0 0 15px rgba(155, 89, 182, 0.7); } /* Violet */
+.enchant-4 { color: #f1c40f; font-weight: 700; text-shadow: 0 0 15px rgba(241, 196, 15, 0.7); } /* Jaune */
 
 /* En-têtes de colonnes */
 th {
@@ -377,110 +386,6 @@ tfoot td {
     100% { transform: rotate(360deg); }
 }
 
-/* Info panel */
-.info-panel {
-    background: linear-gradient(145deg, #141c24, #0f151c);
-    border-radius: 16px;
-    padding: 25px;
-    margin-top: 30px;
-    border: 1px solid #2a3745;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-    position: relative;
-    overflow: hidden;
-}
-
-.info-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #ffd966, #b380ff, transparent);
-}
-
-#resource-info-content {
-    background: rgba(0,0,0,0.3);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #1e2a36;
-}
-
-#resource-info-content h4 {
-    color: #ffd966;
-    margin-bottom: 12px;
-    font-size: 1.3em;
-    font-weight: 600;
-}
-
-#resource-info-content p {
-    margin: 8px 0;
-    line-height: 1.6;
-    color: #c0c9d0;
-}
-
-#resource-info-content .note {
-    font-style: italic;
-    color: #7a8a9a;
-    font-size: 0.9em;
-    margin-top: 15px;
-    padding-top: 12px;
-    border-top: 1px solid #1e2a36;
-}
-
-/* Légende des enchantements */
-#enchant-legend {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 2px solid #1e2a36;
-}
-
-#enchant-legend h4 {
-    color: #ffd966;
-    margin-bottom: 15px;
-    font-size: 1.1em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.enchant-legend {
-    display: flex;
-    gap: 25px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
-    background: rgba(0,0,0,0.4);
-    border-radius: 30px;
-    border: 1px solid #1e2a36;
-    transition: all 0.2s;
-}
-
-.legend-item:hover {
-    border-color: #ffd966;
-    transform: translateY(-2px);
-    background: rgba(255, 217, 102, 0.1);
-}
-
-.legend-color {
-    width: 18px;
-    height: 18px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px currentColor;
-}
-
-.enchant-0-bg { background: linear-gradient(145deg, #9aa9b9, #6c7a8f); box-shadow: 0 0 10px #9aa9b9; }
-.enchant-1-bg { background: linear-gradient(145deg, #7bdfa7, #4caf7a); box-shadow: 0 0 10px #7bdfa7; }
-.enchant-2-bg { background: linear-gradient(145deg, #89beff, #3b9eff); box-shadow: 0 0 10px #89beff; }
-.enchant-3-bg { background: linear-gradient(145deg, #d0b5ff, #b380ff); box-shadow: 0 0 10px #d0b5ff; }
-.enchant-4-bg { background: linear-gradient(145deg, #ffb5b5, #ff8a8a); box-shadow: 0 0 10px #ffb5b5; }
-
 /* Status messages */
 .api-status {
     padding: 12px 20px;
@@ -525,30 +430,6 @@ tfoot td {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Boutons small */
-.btn-small {
-    background: linear-gradient(145deg, #1e2630, #151c24);
-    color: #9aa9b9;
-    border: 1px solid #2a3745;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-small:hover:not(:disabled) {
-    background: linear-gradient(145deg, #25303d, #1e2630);
-    color: #ffd966;
-    border-color: #ffd966;
-    transform: scale(1.05);
-}
-
-.btn-small:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
 /* Responsive */
 @media (max-width: 1200px) {
     .container {
@@ -577,15 +458,6 @@ tfoot td {
     .btn-primary {
         margin-left: 0;
         width: 100%;
-    }
-    
-    .enchant-legend {
-        gap: 10px;
-    }
-    
-    .legend-item {
-        padding: 5px 12px;
-        font-size: 12px;
     }
 }
 
