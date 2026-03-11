@@ -317,3 +317,27 @@ function clearStatusAfterDelay() {
     }
     requestAnimationFrame(fadeOut);
 }
+
+async function testEuropeAPI() {
+    try {
+        const url = 'https://europe.albion-online-data.com/api/v2/stats/prices/T4_WOOD.json?locations=Thetford&qualities=1';
+        
+        // Utilisation de corsproxy.io (le même qui fonctionnait avant)
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        
+        console.log('✅ Réponse API Europe:', data);
+        
+        if (data && data.length > 0) {
+            const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
+            const prixVente = Math.min(...data[0].sell_price_max.map(p => p.Price));
+            
+            alert(`T4 Bois à Thetford:\nPrix achat: ${prixAchat}\nPrix vente: ${prixVente}`);
+        }
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        alert('Échec de la connexion à l\'API Europe');
+    }
+}
