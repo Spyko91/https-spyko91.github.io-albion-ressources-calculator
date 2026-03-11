@@ -25,14 +25,11 @@ async function loadPricesFromFile() {
     showLoading(true);
     
     try {
-        // Charger le fichier prices.json
         const response = await fetch('prices.json');
         const data = await response.json();
         
         if (data && data.prices) {
             currentPrices = data.prices;
-            
-            // Mettre à jour l'affichage
             renderResourceTable();
             
             const updateTime = document.getElementById('updateTime');
@@ -41,13 +38,14 @@ async function loadPricesFromFile() {
             }
             
             showStatus(`✓ Prix chargés (${Object.keys(currentPrices).length} ressources)`, 'success');
-            setTimeout(() => showStatus('', 'info'), 3000);
+            // Suppression du setTimeout pour le message
+            clearStatusAfterDelay();
         }
     } catch (error) {
         console.error('Erreur chargement prices.json:', error);
         showStatus('❌ Erreur chargement - Utilisation prix par défaut', 'error');
         
-        // Fallback sur FALLBACK_PRICES
+        // Fallback direct sans setTimeout
         Object.keys(RESOURCES).forEach(resourceKey => {
             RESOURCES[resourceKey].items.forEach(item => {
                 const fallback = FALLBACK_PRICES[item.itemId];
@@ -62,6 +60,26 @@ async function loadPricesFromFile() {
     } finally {
         showLoading(false);
     }
+}
+
+// Fonction pour effacer le message après 3 secondes (sans setTimeout avec string)
+function clearStatusAfterDelay() {
+    // On utilise un compteur basé sur requestAnimationFrame plutôt que setTimeout
+    let start = null;
+    const duration = 3000; // 3 secondes
+    
+    function fadeOut(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = timestamp - start;
+        
+        if (elapsed < duration) {
+            requestAnimationFrame(fadeOut);
+        } else {
+            showStatus('', 'info');
+        }
+    }
+    
+    requestAnimationFrame(fadeOut);
 }
 
 // ============================================
