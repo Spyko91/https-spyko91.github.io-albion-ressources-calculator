@@ -97,6 +97,7 @@ function renderResourceTable() {
             <tr class="tier-${item.tier}" data-resource-index="${index}">
                 <td><strong>${item.tier}</strong></td>
                 <td class="${enchantClass}"><strong>${item.enchant}</strong></td>
+                <td>${item.rawName}</td>
                 <td>${item.quantity}</td>
                 <td><input type="number" class="price-input raw-price" data-resource="${selectedResource}" data-index="${index}" value="${logPrice || ''}" placeholder="0" step="1" min="0"></td>
                 <td class="total-cost" data-resource="${selectedResource}" data-index="${index}">${totalCost ? totalCost.toLocaleString() : '-'}</td>
