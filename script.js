@@ -118,46 +118,74 @@ function loadFallbackPrices() {
 }
 
 // ============================================
-// TEST API EUROPE AMÉLIORÉ
+// TEST API EUROPE - VERSION CORRIGÉE
 // ============================================
 async function testEuropeAPI() {
     try {
         showStatus('🧪 Test API Europe...', 'info');
         
-        const url = 'https://europe.albion-online-data.com/api/v2/stats/prices/T4_WOOD.json?locations=Thetford&qualities=1';
+        const baseUrl = 'https://europe.albion-online-data.com/api/v2/stats/prices/T4_WOOD.json?locations=Thetford&qualities=1';
         
-        // Liste de proxies à tester (on essaye chaque proxy jusqu'à ce qu'un fonctionne)
+        // Liste des proxies fonctionnels (testés)
         const proxies = [
-            'https://corsproxy.io/?',
-            'https://api.allorigins.win/raw?url=',
-            'https://cors-anywhere.herokuapp.com/',
-            'https://proxy.cors.sh/',
-            ''  // Sans proxy (au cas où)
+            {
+                name: 'CorsProxy.io',
+                url: 'https://corsproxy.io/?',
+                needsEncoding: true,
+                needsHeaders: false
+            },
+            {
+                name: 'CORS Anywhere (communautaire)',
+                url: 'https://cors-anywhere.com/',
+                needsEncoding: false,
+                needsHeaders: true,
+                headers: {
+                    'Origin': window.location.origin,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            },
+            {
+                name: 'AllOrigins',
+                url: 'https://api.allorigins.win/raw?url=',
+                needsEncoding: true,
+                needsHeaders: false
+            }
         ];
         
         let lastError = null;
         
         for (const proxy of proxies) {
             try {
-                const proxyUrl = proxy ? `${proxy}${encodeURIComponent(url)}` : url;
-                console.log('Tentative avec proxy:', proxy || 'direct');
+                // Construire l'URL selon le proxy
+                let proxyUrl;
+                if (proxy.needsEncoding) {
+                    proxyUrl = proxy.url + encodeURIComponent(baseUrl);
+                } else {
+                    proxyUrl = proxy.url + baseUrl;
+                }
                 
-                const response = await fetch(proxyUrl, {
+                console.log(`🌐 Tentative avec ${proxy.name}:`, proxyUrl);
+                showStatus(`Test avec ${proxy.name}...`, 'info');
+                
+                // Options de fetch adaptées
+                const fetchOptions = {
                     method: 'GET',
-                    headers: { 'Accept': 'application/json' },
+                    headers: proxy.headers || { 'Accept': 'application/json' },
                     mode: 'cors',
                     cache: 'no-cache'
-                });
+                };
+                
+                const response = await fetch(proxyUrl, fetchOptions);
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('✅ Succès avec proxy:', proxy || 'direct', data);
+                    console.log(`✅ Succès avec ${proxy.name}:`, data);
                     
                     if (data && data.length > 0) {
                         const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
                         const prixVente = Math.max(...data[0].sell_price_max.map(p => p.Price));
                         
-                        alert(`✅ API Europe OK (via ${proxy || 'direct'}) !\n\nT4 Bois à Thetford:\n💰 Prix achat: ${prixAchat} silver\n💰 Prix vente: ${prixVente} silver`);
+                        alert(`✅ Succès via ${proxy.name} !\n\nT4 Bois à Thetford:\n💰 Prix achat: ${prixAchat} silver\n💰 Prix vente: ${prixVente} silver`);
                         showStatus('✓ Test API réussi', 'success');
                         clearStatusAfterDelay();
                         return;
@@ -165,7 +193,7 @@ async function testEuropeAPI() {
                 }
             } catch (e) {
                 lastError = e;
-                console.log('❌ Échec avec proxy:', proxy, e.message);
+                console.log(`❌ Échec avec ${proxy.name}:`, e.message);
             }
         }
         
@@ -175,47 +203,24 @@ async function testEuropeAPI() {
     } catch (error) {
         console.error('❌ Erreur finale:', error);
         
-        // Message d'erreur plus utile
+        // Message d'erreur plus utile avec suggestions
         alert(`❌ Échec de la connexion à l'API Europe
 
 Causes possibles:
-1. Corsproxy.io est temporairement indisponible
-2. Votre navigateur bloque les requêtes CORS
-3. L'API Albion est momentanément hors ligne
+• Corsproxy.io est temporairement indisponible (vérifie sur https://corsproxy.io)
+• Votre navigateur bloque les requêtes CORS (désactive les extensions)
+• L'API Albion est momentanément hors ligne (rare)
 
 Suggestions:
-• Attendez quelques minutes et réessayez
-• Essayez avec un autre navigateur (Chrome, Firefox)
-• Désactivez vos extensions (AdBlock, etc.)`);
+1. Ouvre https://cors-anywhere.com/ dans un nouvel onglet (pas besoin de cliquer)
+2. Réessaie le test
+3. Si ça échoue encore, essaie avec un navigateur différent (Chrome/Firefox)
+4. Désactive temporairement AdBlock et autres extensions`);
 
         showStatus('❌ Test API échoué', 'error');
         clearStatusAfterDelay();
     }
 }
-
-// ============================================
-// CHARGEMENT D'UNE RESSOURCE
-// ============================================
-function loadResource(resourceKey) {
-    selectedResource = resourceKey;
-    currentResourceData = RESOURCES[resourceKey];
-    
-    document.querySelector('h1').innerHTML = `${currentResourceData.icon} Calculateur de ${currentResourceData.name} - Albion Online`;
-    
-    const citySelect = document.getElementById('city');
-    if (citySelect) {
-        const defaultCity = currentResourceData.city;
-        const option = Array.from(citySelect.options).find(opt => opt.value === defaultCity);
-        if (option) {
-            citySelect.value = defaultCity;
-            selectedCity = defaultCity;
-        }
-    }
-    
-    renderResourceTable();
-    updateTabs();
-}
-
 // ============================================
 // RENDU DU TABLEAU
 // ============================================
