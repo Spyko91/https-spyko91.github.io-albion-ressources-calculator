@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Albion Resources Calculator - Toutes les ressources</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>">
 </head>
 <body>
     <div class="container">
@@ -31,14 +31,16 @@
                         <option value="Fort Sterling">Fort Sterling</option>
                         <option value="Caerleon">Caerleon</option>
                         <option value="Brecilien">Brecilien</option>
-                        <option value="BlackMarket">Black Market</option>
-                        <option value="Morgana">Morgana</option>
-                        <option value="Keeper">Keeper</option>
-                        <option value="Undead">Undead</option>
-                        <option value="Avalon">Avalon</option>
                     </select>
                     
                     <button id="refreshPrices" class="btn-primary">🔄 Mettre à jour tous les prix</button>
+                </div>
+                
+                <!-- 👇 BOUTON DE TEST API EUROPE -->
+                <div style="margin-top: 10px; text-align: right;">
+                    <button onclick="testEuropeAPI()" style="background: #333; color: #ffd966; border: 1px solid #ffd966; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🧪 Test API Europe (T4 Bois)
+                    </button>
                 </div>
                 
                 <div class="last-update">
@@ -68,7 +70,6 @@
                 <div class="spinner"></div>
                 <p>Chargement des prix depuis l'API...</p>
             </div>
-
         </main>
     </div>
     
