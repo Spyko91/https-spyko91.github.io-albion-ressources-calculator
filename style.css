@@ -1,0 +1,143 @@
+/* Onglets de ressources */
+.resource-tabs {
+    display: flex;
+    gap: 5px;
+    margin-top: 20px;
+    border-bottom: 2px solid #3a424e;
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    background: linear-gradient(145deg, #2a3340, #1f2732);
+    color: #b0c4de;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px 8px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #3a4655;
+    border-bottom: none;
+    margin-right: 2px;
+}
+
+.tab-btn:hover {
+    background: linear-gradient(145deg, #33404d, #2a3340);
+    color: #ffd966;
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    background: linear-gradient(145deg, #3a4655, #2f3a48);
+    color: #ffd966;
+    border-color: #ffd966;
+    position: relative;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ffd966;
+}
+
+/* Styles pour les différentes ressources dans le tableau */
+.tier-T2 td:first-child { color: #c0c9d9; }
+.tier-T3 td:first-child { color: #6fda9f; }
+.tier-T4 td:first-child { color: #7fb9ff; }
+.tier-T5 td:first-child { color: #ffd966; }
+.tier-T6 td:first-child { color: #ffaa6f; }
+.tier-T7 td:first-child { color: #ff8a8a; }
+.tier-T8 td:first-child { color: #c7a9ff; }
+
+/* Amélioration du panneau d'information */
+#resource-info-content {
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+#resource-info-content h4 {
+    color: #ffd966;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+#resource-info-content p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+#resource-info-content .note {
+    font-style: italic;
+    color: #9aa9b9;
+    font-size: 0.9em;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #3a4655;
+}
+
+#enchant-legend {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #3a4655;
+}
+
+#enchant-legend h4 {
+    color: #ffd966;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.enchant-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+.enchant-0-bg { background: linear-gradient(145deg, #b0b0b0, #8a8a8a); }
+.enchant-1-bg { background: linear-gradient(145deg, #6fda9f, #4caf7a); }
+.enchant-2-bg { background: linear-gradient(145deg, #7fb9ff, #3b9eff); }
+.enchant-3-bg { background: linear-gradient(145deg, #c7a9ff, #b380ff); }
+
+/* Adaptation responsive */
+@media (max-width: 1200px) {
+    .resource-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex: 1 1 auto;
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .enchant-legend {
+        gap: 10px;
+    }
+    
+    .legend-item {
+        font-size: 12px;
+    }
+}
