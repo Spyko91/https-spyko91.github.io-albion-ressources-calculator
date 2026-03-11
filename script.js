@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attacher les événements
     attachEventListeners();
     
-    // Ajouter la légende
     addEnchantLegend();
     
     // Charger les prix
