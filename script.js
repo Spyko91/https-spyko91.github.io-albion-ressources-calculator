@@ -5,6 +5,7 @@ let currentPrices = {};
 let selectedCity = 'Thetford';
 let selectedResource = 'wood';
 let currentResourceData = RESOURCES.wood;
+let useApi = false;
 
 // ============================================
 // INITIALISATION
@@ -20,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadResource('wood');
     attachEventListeners();
     
-    // Puis charger le fichier JSON
-    loadPricesFromFile();
+    // Essayer de charger depuis l'API d'abord
+    fetchAllPricesFromAPI();
 });
 
 // ============================================
@@ -58,19 +59,111 @@ function savePrices() {
 }
 
 // ============================================
+// CHARGEMENT DES PRIX DEPUIS L'API (NOUVEAU)
+// ============================================
+async function fetchAllPricesFromAPI() {
+    showLoading(true);
+    showStatus('📡 Connexion à l\'API Albion...', 'info');
+    
+    // Utiliser CORS Anywhere qui a fonctionné
+    const proxyUrl = 'https://cors-anywhere.com/';
+    
+    // Construire la liste des items à récupérer (pour le bois d'abord, puis on étendra)
+    const itemsToFetch = [
+        'T2_WOOD', 'T3_WOOD', 'T4_WOOD', 'T4_WOOD_LEVEL1', 'T4_WOOD_LEVEL2', 'T4_WOOD_LEVEL3', 'T4_WOOD_LEVEL4',
+        'T5_WOOD', 'T5_WOOD_LEVEL1', 'T5_WOOD_LEVEL2', 'T5_WOOD_LEVEL3', 'T5_WOOD_LEVEL4',
+        'T6_WOOD', 'T6_WOOD_LEVEL1', 'T6_WOOD_LEVEL2', 'T6_WOOD_LEVEL3', 'T6_WOOD_LEVEL4',
+        'T7_WOOD', 'T7_WOOD_LEVEL1', 'T7_WOOD_LEVEL2', 'T7_WOOD_LEVEL3', 'T7_WOOD_LEVEL4',
+        'T8_WOOD', 'T8_WOOD_LEVEL1', 'T8_WOOD_LEVEL2', 'T8_WOOD_LEVEL3', 'T8_WOOD_LEVEL4'
+    ];
+    
+    const itemsRefined = itemsToFetch.map(item => 
+        item.replace('WOOD', 'PLANKS')
+    );
+    
+    const allItems = [...itemsToFetch, ...itemsRefined];
+    
+    try {
+        // Récupérer les prix bruts
+        const rawUrl = `https://europe.albion-online-data.com/api/v2/stats/prices/${itemsToFetch.join(',')}.json?locations=${selectedCity}&qualities=1`;
+        const rawResponse = await fetch(proxyUrl + rawUrl, {
+            headers: { 'Origin': window.location.origin }
+        });
+        
+        if (rawResponse.ok) {
+            const rawData = await rawResponse.json();
+            
+            // Traiter les données brutes
+            rawData.forEach(item => {
+                if (item && item.sell_price_min && item.sell_price_min.length > 0) {
+                    const itemId = item.item_id;
+                    const price = Math.min(...item.sell_price_min.map(p => p.Price));
+                    
+                    if (!currentPrices[itemId]) currentPrices[itemId] = {};
+                    currentPrices[itemId].raw = price;
+                }
+            });
+            
+            // Récupérer les prix raffinés
+            const refinedUrl = `https://europe.albion-online-data.com/api/v2/stats/prices/${itemsRefined.join(',')}.json?locations=${selectedCity}&qualities=1`;
+            const refinedResponse = await fetch(proxyUrl + refinedUrl, {
+                headers: { 'Origin': window.location.origin }
+            });
+            
+            if (refinedResponse.ok) {
+                const refinedData = await refinedResponse.json();
+                
+                refinedData.forEach(item => {
+                    if (item && item.sell_price_min && item.sell_price_min.length > 0) {
+                        const itemId = item.item_id;
+                        const price = Math.min(...item.sell_price_min.map(p => p.Price));
+                        
+                        // Trouver l'ID de base correspondant
+                        let baseId = itemId.replace('PLANKS', 'WOOD');
+                        
+                        if (!currentPrices[baseId]) currentPrices[baseId] = {};
+                        currentPrices[baseId].refined = price;
+                    }
+                });
+                
+                // Sauvegarder et mettre à jour l'affichage
+                savePrices();
+                renderResourceTable();
+                
+                const updateTime = document.getElementById('updateTime');
+                if (updateTime) {
+                    updateTime.textContent = new Date().toLocaleString('fr-FR') + ' (API)';
+                }
+                
+                showStatus('✓ Prix chargés depuis l\'API', 'success');
+                useApi = true;
+            }
+        } else {
+            // Si l'API échoue, charger depuis le fichier JSON
+            console.log('API inaccessible, chargement depuis prices.json');
+            loadPricesFromFile();
+        }
+    } catch (error) {
+        console.error('Erreur API:', error);
+        showStatus('⚠️ API inaccessible - Chargement fichier local', 'warning');
+        loadPricesFromFile();
+    } finally {
+        showLoading(false);
+        clearStatusAfterDelay();
+    }
+}
+
+// ============================================
 // CHARGEMENT DES PRIX DEPUIS LE FICHIER JSON
 // ============================================
 async function loadPricesFromFile() {
-    showLoading(true);
-    
     try {
         const response = await fetch('prices.json');
         const data = await response.json();
         
         if (data && data.prices) {
-            // Fusion intelligente sans écraser les prix modifiés
             Object.keys(data.prices).forEach(key => {
-                if (!currentPrices[key]) {
+                if (!currentPrices[key] || !useApi) {
                     currentPrices[key] = data.prices[key];
                 }
             });
@@ -82,7 +175,7 @@ async function loadPricesFromFile() {
                 updateTime.textContent = data.lastUpdate || new Date().toLocaleString('fr-FR');
             }
             
-            showStatus(`✓ Prix chargés (${Object.keys(currentPrices).length} ressources)`, 'success');
+            showStatus(`✓ Prix chargés (fichier local)`, 'success');
             clearStatusAfterDelay();
         }
     } catch (error) {
@@ -94,8 +187,6 @@ async function loadPricesFromFile() {
         } else {
             renderResourceTable();
         }
-    } finally {
-        showLoading(false);
     }
 }
 
@@ -118,106 +209,35 @@ function loadFallbackPrices() {
 }
 
 // ============================================
-// TEST API EUROPE - VERSION FINALE CORRIGÉE
+// TEST API EUROPE (pour diagnostic)
 // ============================================
 async function testEuropeAPI() {
     try {
         showStatus('🧪 Test API Europe...', 'info');
         
         const baseUrl = 'https://europe.albion-online-data.com/api/v2/stats/prices/T4_WOOD.json?locations=Thetford&qualities=1';
+        const proxyUrl = 'https://cors-anywhere.com/' + baseUrl;
         
-        // Liste des proxies fonctionnels (testés)
-        const proxies = [
-            {
-                name: 'CorsProxy.io',
-                url: 'https://corsproxy.io/?',
-                needsEncoding: true,
-                needsHeaders: false
-            },
-            {
-                name: 'CORS Anywhere (communautaire)',
-                url: 'https://cors-anywhere.com/',
-                needsEncoding: false,
-                needsHeaders: true,
-                headers: {
-                    'Origin': window.location.origin,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            },
-            {
-                name: 'AllOrigins',
-                url: 'https://api.allorigins.win/raw?url=',
-                needsEncoding: true,
-                needsHeaders: false
+        const response = await fetch(proxyUrl, {
+            headers: { 'Origin': window.location.origin }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Données API:', data);
+            
+            if (data && data.length > 0 && data[0].sell_price_min) {
+                const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
+                alert(`✅ API OK !\nPrix T4 Bois: ${prixAchat} silver`);
+                showStatus('✓ Test réussi', 'success');
             }
-        ];
-        
-        let lastError = null;
-        
-        for (const proxy of proxies) {
-            try {
-                // Construire l'URL selon le proxy
-                let proxyUrl;
-                if (proxy.needsEncoding) {
-                    proxyUrl = proxy.url + encodeURIComponent(baseUrl);
-                } else {
-                    proxyUrl = proxy.url + baseUrl;
-                }
-                
-                console.log(`🌐 Tentative avec ${proxy.name}:`, proxyUrl);
-                showStatus(`Test avec ${proxy.name}...`, 'info');
-                
-                // Options de fetch adaptées
-                const fetchOptions = {
-                    method: 'GET',
-                    headers: proxy.headers || { 'Accept': 'application/json' },
-                    mode: 'cors',
-                    cache: 'no-cache'
-                };
-                
-                const response = await fetch(proxyUrl, fetchOptions);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(`✅ Succès avec ${proxy.name}:`, data);
-                    
-                    if (data && data.length > 0) {
-                        const prixAchat = Math.min(...data[0].sell_price_min.map(p => p.Price));
-                        const prixVente = Math.max(...data[0].sell_price_max.map(p => p.Price));
-                        
-                        alert(`✅ Succès via ${proxy.name} !\n\nT4 Bois à Thetford:\n💰 Prix achat: ${prixAchat} silver\n💰 Prix vente: ${prixVente} silver`);
-                        showStatus('✓ Test API réussi', 'success');
-                        clearStatusAfterDelay();
-                        return;
-                    }
-                }
-            } catch (e) {
-                lastError = e;
-                console.log(`❌ Échec avec ${proxy.name}:`, e.message);
-            }
+        } else {
+            alert('❌ Échec test API');
         }
-        
-        // Si on arrive ici, tous les proxies ont échoué
-        throw lastError || new Error('Tous les proxies ont échoué');
-        
     } catch (error) {
-        console.error('❌ Erreur finale:', error);
-        
-        // Message d'erreur plus utile avec suggestions
-        alert(`❌ Échec de la connexion à l'API Europe
-
-Causes possibles:
-• Corsproxy.io est temporairement indisponible
-• Votre navigateur bloque les requêtes CORS
-• L'API Albion est momentanément hors ligne (rare)
-
-Suggestions:
-1. Ouvre https://cors-anywhere.com/ dans un nouvel onglet (pas besoin de cliquer)
-2. Réessaie le test
-3. Si ça échoue encore, essaie avec un navigateur différent (Chrome/Firefox)
-4. Désactive temporairement AdBlock et autres extensions`);
-
-        showStatus('❌ Test API échoué', 'error');
+        console.error('❌ Erreur test:', error);
+        alert('❌ Erreur de connexion');
+    } finally {
         clearStatusAfterDelay();
     }
 }
@@ -435,5 +455,14 @@ function updateTabs() {
 function attachEventListeners() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => loadResource(e.target.dataset.resource));
+    });
+    
+    document.getElementById('refreshPrices').addEventListener('click', () => {
+        fetchAllPricesFromAPI();
+    });
+    
+    document.getElementById('city').addEventListener('change', (e) => {
+        selectedCity = e.target.value;
+        fetchAllPricesFromAPI();
     });
 }
